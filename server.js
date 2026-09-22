@@ -179,5 +179,5 @@ app.get("/user/:username", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Pinterest clone running on http://localhost:3000`);
+  console.log(`Pinterest clone running on port ${PORT}`);
 });
