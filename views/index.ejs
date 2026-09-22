@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pinboard — Visual Inspiration</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+  <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <header>
+    <h1><a href="/">📌 Pinboard</a></h1>
+    <div class="nav-actions">
+      <% if (user) { %>
+        <a href="/pins/new" class="btn btn-outline">+ New Pin</a>
+        <a href="/user/<%= user.username %>" class="btn btn-outline">My Wall</a>
+        <a href="/logout" class="btn btn-outline" style="border-color: #EF4444 !important; color: #EF4444 !important;">Log Out</a>
+      <% } else { %>
+        <a href="/auth/github" class="btn">Login with GitHub</a>
+      <% } %>
+    </div>
+  </header>
+
+  <div class="hero-banner">
+    <h2><%= profileUser ? profileUser.displayName + "'s Wall" : "Discover Ideas & Inspiration" %></h2>
+    <p><%= profileUser ? "Explore curated pins by @" + profileUser.username : "Explore, save, and share your favorite visuals across the web." %></p>
+  </div>
+
+  <div class="container" style="padding-top: 0;">
+
+    <% if (user && !profileUser) { %>
+      <div class="quick-add-box">
+        <form action="/pins" method="POST">
+          <input type="text" name="title" placeholder="Pin Title..." required>
+          <input type="url" name="imageUrl" placeholder="Image URL (https://...)" required>
+          <button type="submit" class="btn">Publish</button>
+        </form>
+      </div>
+    <% } %>
+
+    <% if (pins && pins.length > 0) { %>
+      <div class="grid">
+        <div class="grid-sizer"></div>
+        <% pins.forEach(pin => { %>
+          <div class="pin-card">
+            <a href="/pin/<%= pin._id %>">
+              <img src="<%= pin.imageUrl %>" alt="<%= pin.title %>" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0F172A/38BDF8?text=Image+Unavailable';">
+            </a>
+            <div class="pin-body">
+              <a href="/pin/<%= pin._id %>" class="pin-title"><%= pin.title %></a>
+              <div class="pin-footer">
+                <span>By <a href="/user/<%= pin.owner ? pin.owner.username : '#' %>">@<%= pin.owner ? pin.owner.username : 'unknown' %></a></span>
+                <% if (user && pin.owner && pin.owner._id.toString() === user._id.toString()) { %>
+                  <form action="/pins/delete/<%= pin._id %>" method="POST" style="margin:0;">
+                    <button type="submit" class="delete-btn">Delete</button>
+                  </form>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <p style="text-align: center; color: var(--text-muted); margin-top: 60px; font-size: 1.1rem;">No pins found on this wall yet.</p>
+    <% } %>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      var $grid = $('.grid').imagesLoaded(function() {
+        $grid.masonry({
+          itemSelector: '.pin-card',
+          columnWidth: '.grid-sizer',
+          percentPosition: true,
+          gutter: 20
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

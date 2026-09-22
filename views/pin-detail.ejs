@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title><%= pin.title %> — Pinboard</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <header>
+    <h1><a href="/">📌 Pinboard</a></h1>
+    <div class="nav-actions">
+      <a href="/" class="btn btn-outline">Back to Feed</a>
+      <% if (user) { %>
+        <a href="/user/<%= user.username %>" class="btn btn-outline">My Wall</a>
+      <% } %>
+    </div>
+  </header>
+
+  <div class="container" style="max-width: 900px; margin-top: 40px;">
+    <div style="background: var(--bg-slate); border: 1px solid var(--border-subtle); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow); display: flex; flex-direction: column;">
+      <div style="background: var(--bg-navy); text-align: center; padding: 20px;">
+        <img src="<%= pin.imageUrl %>" alt="<%= pin.title %>" onerror="this.onerror=null; this.src='https://placehold.co/800x600/0F172A/38BDF8?text=Image+Unavailable';" style="max-width: 100%; max-height: 600px; object-fit: contain; border-radius: 12px;">
+      </div>
+      <div style="padding: 30px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="margin: 0 0 8px 0; font-size: 1.5rem;"><%= pin.title %></h2>
+          <p style="margin: 0; color: var(--text-muted); font-size: 0.95rem;">Pinned by <a href="/user/<%= pin.owner ? pin.owner.username : '#' %>" style="color: var(--accent-sky); text-decoration: none; font-weight: 600;">@<%= pin.owner ? pin.owner.username : 'Unknown' %></a></p>
+        </div>
+        <% if (user && pin.owner && pin.owner._id.toString() === user._id.toString()) { %>
+          <form action="/pins/delete/<%= pin._id %>" method="POST" style="margin:0;">
+            <button type="submit" class="btn btn-danger" style="border-radius: 9999px; padding: 0.6rem 1.2rem;">Delete Pin</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
